@@ -300,7 +300,105 @@
       
         
           
-            
+            <h1 id="1-Node"><a href="#1-Node" class="headerlink" title="1. Node"></a>1. <strong>Node</strong></h1><p>Node中包含：ECMAScript   Node操作的一些API (里面没有DOM和BOM)</p>
+<p>Node中有一个顶层对象叫global，这个global就类似于我们之前前台js中的window对象 执行node命令 ： node aa.js   //.js可以省略。前提是一定要进入该文件所在的目录。console.log(<strong>filename);  //文件的全路径的信息(包含文件名)console.log(</strong>dirname);  //文件所在的全路径目录信息</p>
+<h2 id="1-1-FS模块"><a href="#1-1-FS模块" class="headerlink" title="1.1 FS模块"></a>1.1 <strong>FS模块</strong></h2><p>fs是node中一个关于文件读写的模块 <a href="http://nodejs.cn/api/fs.html" target="_blank" rel="noopener">http://nodejs.cn/api/fs.html</a> 注意点：在该文档中，凡是方法名加Sync的都是同步方法 文件操作的常用方法：1. stat()方法可以查看一个路径的具体信息fs.stat(“./02.fs.js”, function(err,stats){     //如果有错，说明文件或者目录不存在    if(err){        return;    }     //console.log(stats);     if(stats.isFile()){        console.log(“是文件”);    }    else if(stats.isDirectory()){        console.log(“是目录”)    }}) 2. readFile() 文件读取fs.readFile(“./aa.txt”,function(err,data){    if (err) {        return;    }     console.log(data.toString(“utf-8”));}) 3. 文件写入const data = new Uint8Array(Buffer.from(‘Node.js中文网’));fs.writeFile(“./bb.txt”,data,function(err){    if(err){        return;    }    console.log(“写文件成功”);}) 4. 创建目录fs.mkdir(“./tt”,function(err){            if (err) {                console.log(“目录创建错误”);                return;            }        }) 5. 读取目录fs.readdir(“./“,function(err,files){    files.forEach((item,idx)=&gt;{        fs.stat(item,function(err,stats){            if(stats.isFile()){                console.log(item+”是文件”);            }            else if(stats.isDirectory()){                console.log(item+”是目录”);            }        })    })}) 6. 删除目录fs.rmdir(“./kk”,function(err){    if (err) {        console.log(err);        console.log(“删除错误”);    }    else{        console.log(“删除成功”);    }}) //删除文件fs.unlinkSync(curPath); 7. 文件操作的Promiselet fs = require(“fs”);const fsPromises = fs.promises;  fsPromises.stat(“./tt”).then(function(){    console.log(“tt目录已经存在”);},function(err){    return fsPromises.mkdir(“./tt”);}).then(function(){    console.log(“创建目录成功”);    const data = new Uint8Array(Buffer.from(‘Node.js中文网’));    return fsPromises.writeFile(“./tt/bb.txt”,data);},function(err){    console.log(“创建目录失败”)}).then(function(){    console.log(“写入信息成功”)},function(err){    console.log(“写入信息失败”);}) 8. 文件路径的问题./是执行node命令所在的路径也就是说在后台编程中，我们使用./是不靠谱的(相对路径) ，如果我们就是要在code目录下创建kk目录，我们此时要用绝对路径 const path = require(‘path’);path.join(__dirname,”./kk”)</p>
+<h2 id="1-2-Path模块"><a href="#1-2-Path模块" class="headerlink" title="1.2 Path模块"></a>1.2 <strong>Path模块</strong></h2><p>/<em> 路径操作 </em>/const path = require(‘path’); // 获取路径的最后一部分console.log(path.basename(‘/foo/bar/baz/asdf/quux.html’));// 去掉后缀console.log(path.basename(‘/foo/bar/baz/asdf/quux.html’, ‘.html’)); // 获取路径console.log(__dirname);//获取到文件/文件夹所在的路径console.log(path.dirname(‘/abc/qqq/www/abc’)); // 获取扩展名称console.log(path.extname(‘index.html’)); // 两个特殊属性console.log(path.delimiter); //环境变量分隔符(windows中使用; linux中使用:)console.log(path.sep);//表示路径分隔符（windows是\ Linux是/）</p>
+<h2 id="1-3-url和querystring模块"><a href="#1-3-url和querystring模块" class="headerlink" title="1.3 url和querystring模块"></a>1.3 <strong>url和querystring模块</strong></h2><p>url.parse(“url”)  ： 将网址转换成对象url.format(对象) ： 将对象的信息转换成一个网址 querystring.parse(“参数”);  将查询的参数转换为对象querystring.stringify(obj1);  将对象转换为查询参数信息</p>
+<h1 id="2-HTTP介绍"><a href="#2-HTTP介绍" class="headerlink" title="2. HTTP介绍"></a>2. <strong>HTTP介绍</strong></h1><p>HTTP是超文本传输协议   Hyper Text Transfer Protocol</p>
+<p>HTTP协议约定了客户端和服务器通信的数据格式以及传输的规范</p>
+<p>HTTP版本号：1.0     1.1(现在用的比较多)</p>
+<p>HTTP协议约定了请求和响应，包含请求的报文格式、请求的方式、请求的内容格式、响应的内容格式、响应的状态码、响应头等信息 <img src="file:///C:\Users\student\AppData\Local\Temp\ksohtml2276\wps1.jpg" alt="img"> </p>
+<h2 id="2-1-TCP-IP三次握手"><a href="#2-1-TCP-IP三次握手" class="headerlink" title="2.1 TCP/IP三次握手"></a>2.1 <strong>TCP/IP三次握手</strong></h2><p><img src="file:///C:\Users\student\AppData\Local\Temp\ksohtml2276\wps2.jpg" alt="img"> </p>
+<h2 id="2-2-HTTP协议的特点"><a href="#2-2-HTTP协议的特点" class="headerlink" title="2.2 HTTP协议的特点"></a>2.2 <strong>HTTP协议的特点</strong></h2><p>1． 简单快速(数据相对小) 灵活(数据格式有很多)2． 无状态(HTTP通信过程中不记录客户端的状态信息)</p>
+<h2 id="2-3-HTTP的核心概念"><a href="#2-3-HTTP的核心概念" class="headerlink" title="2.3 HTTP的核心概念"></a>2.3 <strong>HTTP的核心概念</strong></h2><p>请求包含内容：1.请求行    请求方式 + 请求路径 + 协议版本号2.请求头    <img src="file:///C:\Users\student\AppData\Local\Temp\ksohtml2276\wps3.jpg" alt="img"> Host: 请求的主机地址Connection: keep-alive   是否保持连接(短时间内复用之前的tcp/ip三次握手建立的管道)Cache-Control: max-age=0    浏览器的缓存User-Agent:  客户端的环境Accept: 客户端能够接收的内容格式Accept-Encoding: 客户端接收的内容的压缩格式的编码Accept-Language: 客户端能够接收的语言 3.请求体 : 只有POST请求才有请求体 响应包含的内容1. 响应行    HTTP/1.1 200 OK    协议版本号 + 响应状态码 + 响应状态码描述2. 响应头   <img src="file:///C:\Users\student\AppData\Local\Temp\ksohtml2276\wps4.jpg" alt="img"> 3. 响应体  ：实际响应的内容</p>
+<p>常见的响应状态码：200 OK：客户端请求成功。 /<em>重定向</em>/301  永久性重定向 302  临时重定向 /<em>客户端错误</em>/400 Bad Request：客户端请求有语法错误，不能被服务器所理解。401 Unauthorized：请求未经授权，这个状态代码必须和 WWW-Authenticate 报头域一起使用。403 Forbidden：服务器收到请求，但是拒绝提供服务。404 Not Found：请求资源不存在，举个例子：输入了错误的URL。 /<em>服务器错误</em>/500 Internal Server Error：服务器发生不可预期的错误。503 Server Unavailable：服务器当前不能处理客户端的请求，一段时间后可能恢复正常。</p>
+<h2 id="2-4-HTTPS"><a href="#2-4-HTTPS" class="headerlink" title="2.4 HTTPS"></a>2.4 <strong>HTTPS</strong></h2><p>HTTP 在通信的时候是明文传输的，客户端和服务器通信过程中的数据是明文传输的。换句话而言，通信的数据很可能会被第三方截获。</p>
+<p>为了保证通信过程中的安全，所以HTTPS就产生了。HTTPS = HTTP + SSL 。</p>
+<p>HTTPS占用 端口号是443  </p>
+<p>HTTP端口是8080</p>
+<h1 id="3-Node搭建HTTP服务器"><a href="#3-Node搭建HTTP服务器" class="headerlink" title="3. Node搭建HTTP服务器"></a>3. <strong>Node搭建HTTP服务器</strong></h1><h2 id="3-1-服务器的搭建"><a href="#3-1-服务器的搭建" class="headerlink" title="3.1 服务器的搭建"></a><strong>3.1 服务器的搭建</strong></h2><p>Node中有一个http模块，允许我们来写的http服务器 let http = require(“http”); http.createServer(function(req,res){    //req是请求对象    //res是响应对象    //res.write()方法将响应的内容写到一个缓冲数组里面res.write(‘hello’);    res.write(‘hi’);    //res.end()可以用来向客户端发送数据    res.end(“nihao”);}).listen(“8000”,function(){    console.log(“服务器已经启动”)})</p>
+<h2 id="3-2-设置响应头"><a href="#3-2-设置响应头" class="headerlink" title="3.2 设置响应头"></a>3.2 <strong>设置响应头</strong></h2><p>//200表示请求响应成功res.writeHead(200,{    //服务器给客户端响应的内容格式以及文件的编码    ‘Content-Type’:”text/html;charset=utf-8”}); res.writeHead(200,{    //服务器给客户端响应的内容格式以及文件的编码    ‘Content-Type’:”text/css “}); res.writeHead(200,{    //服务器给客户端响应的内容格式以及文件的编码    ‘Content-Type’:”application/x-javascript “}); res.writeHead(200,{    //服务器给客户端响应的内容格式以及文件的编码    ‘Content-Type’:”image/jpeg “}); //重定向res.writeHead(302,{    ‘Location’: ‘<a href="http://127.0.0.1:8000/login&#39;})![img](file:///C:\Users\student\AppData\Local\Temp\ksohtml2276\wps5.jpg)" target="_blank" rel="noopener">http://127.0.0.1:8000/login&#39;})![img](file:///C:\Users\student\AppData\Local\Temp\ksohtml2276\wps5.jpg)</a> 301 是永久重定向，浏览器会记住，本来是去请求a.html，服务器重定向到b.html，下次在去请求a.html的时候由于浏览器记住了状态，会直接来到b.html页面 302 是临时重定向， 浏览器不会记住，本来是去请求a.html，服务器重定向到b.html，下次在去请求a.html的时候还是会经历服务器重定向的过程</p>
+<h2 id="3-3-请求方式-请求参数获取"><a href="#3-3-请求方式-请求参数获取" class="headerlink" title="3.3 请求方式/请求参数获取"></a><strong>3.3 请求方式/请求参数获取</strong></h2><h2 id="3-3-1-请求方式"><a href="#3-3-1-请求方式" class="headerlink" title="3.3.1 请求方式"></a><strong>3.3.1 请求方式</strong></h2><p>GET ： 获取资源，一般情况下直接通过浏览器访问指定的网址的时候都是get请求GET请求请求参数跟在URL后面，GET请求是无害的，GET请求可以被缓存，GET请求的请求参数是有长度显示的(不超过2048个字符)，GET请求安全性稍差  POST： 提交资源，一般情况下在表单中用的比较多POST请求一次，就会向服务器提交一次资源。POST请求没有缓存。POST请求请求数据没有长度限制。POST请求请求参数放在请求体里面。POST请求因为请求参数在请求体里面，所以相对GET请求安全。</p>
+<h3 id="3-3-2-请求参数的获取"><a href="#3-3-2-请求参数的获取" class="headerlink" title="3.3.2 请求参数的获取"></a><strong>3.3.2 请求参数的获取</strong></h3><p>//获取GET请求的参数http.createServer(function(req,res){    //将url转换成对象    let obj = url.parse(req.url,true);    //req是请求对象    console.log(obj.query);    //res是响应对象    res.end(“nihao”);}).listen(“8000”,function(){    console.log(“服务器已经启动”)})  //获取POST请求参数http.createServer(function(req,res){    let pdata = ‘’;    // POST请求使用req.on方法处理请求参数    req.on(‘data’,(chunk)=&gt;{        // 每次获取一部分数据        pdata += chunk;    });     req.on(‘end’,()=&gt;{        // 这里才能得到完整的数据        let obj = querystring.parse(pdata);        console.log(obj);    });    //res是响应对象    res.end(“nihao”);}).listen(“8000”,function(){    console.log(“服务器已经启动”)})  //如何发送POST请求1. 安装postmen2. 使用postmen发送post请求<img src="file:///C:\Users\student\AppData\Local\Temp\ksohtml2276\wps6.jpg" alt="img"> </p>
+<p>���k&amp;��p&gt;</p>
+<h1 id="1-Node-1"><a href="#1-Node-1" class="headerlink" title="1.Node"></a>1.Node</h1><p>Node中包含：ECMAScript   Node操作的一些API (里面没有DOM和BOM)</p>
+<p>Node中有一个顶层对象叫global，这个global就类似于我们之前前台js中的window对象</p>
+<p>执行node命令 ： node aa.js   //.js可以省略。前提是一定要进入该文件所在的目录。<br>console.log(<strong>filename);  //文件的全路径的信息(包含文件名)<br>console.log(</strong>dirname);  //文件所在的全路径目录信息</p>
+<h2 id="1-1FS模块"><a href="#1-1FS模块" class="headerlink" title="1.1FS模块"></a>1.1FS模块</h2><p>fs是node中一个关于文件读写的模块</p>
+<p><a href="http://nodejs.cn/api/fs.html" target="_blank" rel="noopener">http://nodejs.cn/api/fs.html</a></p>
+<p>注意点：在该文档中，凡是方法名加Sync的都是同步方法</p>
+<p>文件操作的常用方法：<br>1.stat()方法可以查看一个路径的具体信息<br>fs.stat(“./02.fs.js”, function(err,stats){<br>     //如果有错，说明文件或者目录不存在<br>    if(err){<br>        return;<br>    }</p>
+<pre><code>//console.log(stats);
+
+if(stats.isFile()){
+    console.log(&quot;是文件&quot;);
+}
+else if(stats.isDirectory()){
+    console.log(&quot;是目录&quot;)
+}
+</code></pre><p>})</p>
+<p>2.readFile() 文件读取<br>fs.readFile(“./aa.txt”,function(err,data){<br>    if (err) {<br>        return;<br>    }</p>
+<pre><code>console.log(data.toString(&quot;utf-8&quot;));
+</code></pre><p>})</p>
+<p>3.文件写入<br>const data = new Uint8Array(Buffer.from(‘Node.js中文网’));<br>fs.writeFile(“./bb.txt”,data,function(err){<br>    if(err){<br>        return;<br>    }<br>    console.log(“写文件成功”);<br>})</p>
+<p>4.创建目录<br>fs.mkdir(“./tt”,function(err){<br>            if (err) {<br>                console.log(“目录创建错误”);<br>                return;<br>            }<br>        })</p>
+<p>5.读取目录<br>fs.readdir(“./“,function(err,files){<br>    files.forEach((item,idx)=&gt;{<br>        fs.stat(item,function(err,stats){<br>            if(stats.isFile()){<br>                console.log(item+”是文件”);<br>            }<br>            else if(stats.isDirectory()){<br>                console.log(item+”是目录”);<br>            }<br>        })<br>    })<br>})</p>
+<p>6.删除目录<br>fs.rmdir(“./kk”,function(err){<br>    if (err) {<br>        console.log(err);<br>        console.log(“删除错误”);<br>    }<br>    else{<br>        console.log(“删除成功”);<br>    }<br>})</p>
+<p>//删除文件<br>fs.unlinkSync(curPath);</p>
+<p>7.文件操作的Promise<br>let fs = require(“fs”);<br>const fsPromises = fs.promises;</p>
+<p>fsPromises.stat(“./tt”)<br>.then(function(){<br>    console.log(“tt目录已经存在”);<br>},function(err){<br>    return fsPromises.mkdir(“./tt”);<br>})<br>.then(function(){<br>    console.log(“创建目录成功”);<br>    const data = new Uint8Array(Buffer.from(‘Node.js中文网’));<br>    return fsPromises.writeFile(“./tt/bb.txt”,data);<br>},function(err){<br>    console.log(“创建目录失败”)<br>})<br>.then(function(){<br>    console.log(“写入信息成功”)<br>},function(err){<br>    console.log(“写入信息失败”);<br>})</p>
+<p>8.文件路径的问题<br>./是执行node命令所在的路径<br>也就是说在后台编程中，我们使用./是不靠谱的(相对路径) ，如果我们就是要在code目录下创建kk目录，我们此时要用绝对路径</p>
+<p>const path = require(‘path’);<br>path.join(__dirname,”./kk”)</p>
+<h2 id="1-2Path模块"><a href="#1-2Path模块" class="headerlink" title="1.2Path模块"></a>1.2Path模块</h2><p>/<em><br> 路径操作
+ </em>/<br>const path = require(‘path’);</p>
+<p>// 获取路径的最后一部分<br>console.log(path.basename(‘/foo/bar/baz/asdf/quux.html’));<br>// 去掉后缀<br>console.log(path.basename(‘/foo/bar/baz/asdf/quux.html’, ‘.html’));</p>
+<p>// 获取路径<br>console.log(__dirname);<br>//获取到文件/文件夹所在的路径<br>console.log(path.dirname(‘/abc/qqq/www/abc’));</p>
+<p>// 获取扩展名称<br>console.log(path.extname(‘index.html’));</p>
+<p>// 两个特殊属性<br>console.log(path.delimiter); //环境变量分隔符(windows中使用; linux中使用:)<br>console.log(path.sep);//表示路径分隔符（windows是\ Linux是/）</p>
+<h2 id="1-3url和querystring模块"><a href="#1-3url和querystring模块" class="headerlink" title="1.3url和querystring模块"></a>1.3url和querystring模块</h2><p>url.parse(“url”)  ： 将网址转换成对象<br>url.format(对象) ： 将对象的信息转换成一个网址</p>
+<p>querystring.parse(“参数”);  将查询的参数转换为对象<br>querystring.stringify(obj1);  将对象转换为查询参数信息</p>
+<h1 id="2-HTTP介绍-1"><a href="#2-HTTP介绍-1" class="headerlink" title="2.HTTP介绍"></a>2.HTTP介绍</h1><p>HTTP是超文本传输协议   Hyper Text Transfer Protocol</p>
+<p>HTTP协议约定了客户端和服务器通信的数据格式以及传输的规范</p>
+<p>HTTP版本号：1.0     1.1(现在用的比较多)</p>
+<p>HTTP协议约定了请求和响应，包含请求的报文格式、请求的方式、请求的内容格式、响应的内容格式、响应的状态码、响应头等信息</p>
+<h2 id="2-1TCP-IP三次握手"><a href="#2-1TCP-IP三次握手" class="headerlink" title="2.1TCP/IP三次握手"></a>2.1TCP/IP三次握手</h2><h2 id="2-2HTTP协议的特点"><a href="#2-2HTTP协议的特点" class="headerlink" title="2.2HTTP协议的特点"></a>2.2HTTP协议的特点</h2><p>1．简单快速(数据相对小) 灵活(数据格式有很多)<br>2．无状态(HTTP通信过程中不记录客户端的状态信息)</p>
+<h2 id="2-3HTTP的核心概念"><a href="#2-3HTTP的核心概念" class="headerlink" title="2.3HTTP的核心概念"></a>2.3HTTP的核心概念</h2><p>请求包含内容：<br>1.请求行    请求方式 + 请求路径 + 协议版本号<br>2.请求头  </p>
+<p>Host: 请求的主机地址<br>Connection: keep-alive   是否保持连接(短时间内复用之前的tcp/ip三次握手建立的管道)<br>Cache-Control: max-age=0    浏览器的缓存<br>User-Agent:  客户端的环境<br>Accept: 客户端能够接收的内容格式<br>Accept-Encoding: 客户端接收的内容的压缩格式的编码<br>Accept-Language: 客户端能够接收的语言</p>
+<p>3.请求体 : 只有POST请求才有请求体</p>
+<p>响应包含的内容<br>1.响应行    HTTP/1.1 200 OK    协议版本号 + 响应状态码 + 响应状态码描述<br>2.响应头   </p>
+<p>3.响应体  ：实际响应的内容</p>
+<p>常见的响应状态码：<br>200 OK：客户端请求成功。</p>
+<p>/<em>重定向</em>/<br>301  永久性重定向<br>302  临时重定向</p>
+<p>/<em>客户端错误</em>/<br>400 Bad Request：客户端请求有语法错误，不能被服务器所理解。<br>401 Unauthorized：请求未经授权，这个状态代码必须和 WWW-Authenticate 报头域一起使用。<br>403 Forbidden：服务器收到请求，但是拒绝提供服务。<br>404 Not Found：请求资源不存在，举个例子：输入了错误的URL。</p>
+<p>/<em>服务器错误</em>/<br>500 Internal Server Error：服务器发生不可预期的错误。<br>503 Server Unavailable：服务器当前不能处理客户端的请求，一段时间后可能恢复正常。</p>
+<h2 id="2-4HTTPS"><a href="#2-4HTTPS" class="headerlink" title="2.4HTTPS"></a>2.4HTTPS</h2><p>HTTP 在通信的时候是明文传输的，客户端和服务器通信过程中的数据是明文传输的。换句话而言，通信的数据很可能会被第三方截获。</p>
+<p>为了保证通信过程中的安全，所以HTTPS就产生了。HTTPS = HTTP + SSL 。</p>
+<p>HTTPS占用 端口号是443<br>HTTP端口是8080</p>
+<h1 id="3-Node搭建HTTP服务器-1"><a href="#3-Node搭建HTTP服务器-1" class="headerlink" title="3.Node搭建HTTP服务器"></a>3.Node搭建HTTP服务器</h1><h2 id="3-1-服务器的搭建-1"><a href="#3-1-服务器的搭建-1" class="headerlink" title="3.1 服务器的搭建"></a>3.1 服务器的搭建</h2><p>Node中有一个http模块，允许我们来写的http服务器</p>
+<p>let http = require(“http”);</p>
+<p>http.createServer(function(req,res){<br>    //req是请求对象<br>    //res是响应对象<br>    //res.write()方法将响应的内容写到一个缓冲数组里面<br>res.write(‘hello’);<br>    res.write(‘hi’);<br>    //res.end()可以用来向客户端发送数据<br>    res.end(“nihao”);<br>}).listen(“8000”,function(){<br>    console.log(“服务器已经启动”)<br>})</p>
+<h2 id="3-2设置响应头"><a href="#3-2设置响应头" class="headerlink" title="3.2设置响应头"></a>3.2设置响应头</h2><p>//200表示请求响应成功<br>res.writeHead(200,{<br>    //服务器给客户端响应的内容格式以及文件的编码<br>    ‘Content-Type’:”text/html;charset=utf-8”<br>});</p>
+<p>res.writeHead(200,{<br>    //服务器给客户端响应的内容格式以及文件的编码<br>    ‘Content-Type’:”text/css “<br>});</p>
+<p>res.writeHead(200,{<br>    //服务器给客户端响应的内容格式以及文件的编码<br>    ‘Content-Type’:”application/x-javascript “<br>});</p>
+<p>res.writeHead(200,{<br>    //服务器给客户端响应的内容格式以及文件的编码<br>    ‘Content-Type’:”image/jpeg “<br>});</p>
+<p>//重定向<br>res.writeHead(302,{<br>    ‘Location’: ‘<a href="http://127.0.0.1:8000/login&#39;" target="_blank" rel="noopener">http://127.0.0.1:8000/login&#39;</a><br>})</p>
+<p>301 是永久重定向，浏览器会记住，本来是去请求a.html，服务器重定向到b.html，下次在去请求a.html的时候由于浏览器记住了状态，会直接来到b.html页面</p>
+<p>302 是临时重定向， 浏览器不会记住，本来是去请求a.html，服务器重定向到b.html，下次在去请求a.html的时候还是会经历服务器重定向的过程</p>
+<h2 id="3-3-请求方式-请求参数获取-1"><a href="#3-3-请求方式-请求参数获取-1" class="headerlink" title="3.3 请求方式/请求参数获取"></a>3.3 请求方式/请求参数获取</h2><h3 id="3-3-1-请求方式-1"><a href="#3-3-1-请求方式-1" class="headerlink" title="3.3.1 请求方式"></a>3.3.1 请求方式</h3><p>GET ： 获取资源，一般情况下直接通过浏览器访问指定的网址的时候都是get请求<br>GET请求请求参数跟在URL后面，GET请求是无害的，GET请求可以被缓存，GET请求的请求参数是有长度显示的(不超过2048个字符)，GET请求安全性稍差</p>
+<p>POST： 提交资源，一般情况下在表单中用的比较多<br>POST请求一次，就会向服务器提交一次资源。POST请求没有缓存。POST请求请求数据没有长度限制。POST请求请求参数放在请求体里面。POST请求因为请求参数在请求体里面，所以相对GET请求安全。</p>
+<h3 id="3-3-2-请求参数的获取-1"><a href="#3-3-2-请求参数的获取-1" class="headerlink" title="3.3.2 请求参数的获取"></a>3.3.2 请求参数的获取</h3><p>//获取GET请求的参数<br>http.createServer(function(req,res){<br>    //将url转换成对象<br>    let obj = url.parse(req.url,true);<br>    //req是请求对象<br>    console.log(obj.query);<br>    //res是响应对象<br>    res.end(“nihao”);<br>}).listen(“8000”,function(){<br>    console.log(“服务器已经启动”)<br>})</p>
+<p>//获取POST请求参数<br>http.createServer(function(req,res){<br>    let pdata = ‘’;<br>    // POST请求使用req.on方法处理请求参数<br>    req.on(‘data’,(chunk)=&gt;{<br>        // 每次获取一部分数据<br>        pdata += chunk;<br>    });</p>
+<pre><code>req.on(&apos;end&apos;,()=&gt;{
+    // 这里才能得到完整的数据
+    let obj = querystring.parse(pdata);
+    console.log(obj);
+});
+//res是响应对象
+res.end(&quot;nihao&quot;);
+</code></pre><p>}).listen(“8000”,function(){<br>    console.log(“服务器已经启动”)<br>})</p>
+<p>//如何发送POST请求<br>1.安装postmen<br>2.使用postmen发送post请求</p>
+
           
         
       
